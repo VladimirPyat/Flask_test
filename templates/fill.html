@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<p> {{ round_num }} </p>
+<p> {{ username }} </p>
+{% if form %}
+<form action="" method="post">
+    {{ form.csrf_token }}
+
+    
+    <table>
+           
+        <tr><td>{{ form.h_fields0.label }} </td> <td> {{ form.h_fields0 }} {{ form.g_fields0 }} </td> <td> {{ form.g_fields0.label }}</td></tr>
+       
+
+    </table>
+    
+    {{ form.submit() }}
+
+  {% endif %}
+</form>
+
+{% endblock %}
+
+
