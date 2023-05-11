@@ -13,7 +13,7 @@ class FillF(FlaskForm):
                 data = ' '.join(file.readlines())
     data_split = data.split()
     round_num = (data_split[0])
-    data_split.pop()
+    data_split.pop(0)
     data_split.pop(0)
     data_split.pop(0)
 
