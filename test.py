@@ -1,14 +1,19 @@
 from flask_wtf import FlaskForm
 from wtforms import IntegerField, SubmitField, validators
 from wtforms.validators import DataRequired
+from Readfile import Readfile_tour
 
-def Func_1():
-    print ('Func_1')
-    return
+import datetime 
 
-def Func_2():
-    Func_1()
-    print ('Func_2')
-    return
+def Date_compare (date_str):                               # True если текущее время не позднее того что задано на входе строкой
+  
+  format = '%Y.%m.%d %H:%M'
+  deadline_time = datetime.datetime.strptime(date_str, format)
+  current_time = datetime.datetime.today()
 
-Func_2()
+  return (current_time <= deadline_time)
+
+  
+tour_inf = Readfile_tour()
+print (tour_inf.date)
+print(Date_compare (tour_inf.date))
