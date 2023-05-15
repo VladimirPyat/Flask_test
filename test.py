@@ -1,19 +1,21 @@
 from flask_wtf import FlaskForm
 from wtforms import IntegerField, SubmitField, validators
 from wtforms.validators import DataRequired
-from Readfile import Readfile_tour
 
-import datetime 
 
-def Date_compare (date_str):                               # True если текущее время не позднее того что задано на входе строкой
-  
-  format = '%Y.%m.%d %H:%M'
-  deadline_time = datetime.datetime.strptime(date_str, format)
-  current_time = datetime.datetime.today()
 
-  return (current_time <= deadline_time)
+class Readfile_users:
 
-  
-tour_inf = Readfile_tour()
-print (tour_inf.date)
-print(Date_compare (tour_inf.date))
+  def __init__(self, email):
+    with open('_users.txt', 'r', encoding='utf-8') as file:          #считывание из файла информации о пользователях
+      data = ' '.join(file.readlines()).split()
+    for user in data:
+      if email in user:
+        user_split = user.split(';')
+        if user_split[1] == email:                                  #проверка пароля
+          self.name = user_split[0]                                            #имя пользователя
+          self.passw = user_split[2]                                           #пароль
+          self.login = email[:email.find("@")]  
+
+a = Readfile_users ('scared@mail.ru')
+print (a.login)
