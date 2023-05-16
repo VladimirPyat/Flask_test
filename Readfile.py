@@ -1,17 +1,21 @@
 class Readfile_tour:
 
   def __init__(self):
+    shift = 2                                                       #номер строки начала основных данных
     with open('_tour.txt', 'r', encoding='utf-8') as file:          #считывание из файла информации о текущем туре
-      data = ' '.join(file.readlines()).split()
-      self.num = data[0]                                            #номер тура
-      self.date = (f'{data[1]} {data[2]}')                          #дата и время окончания приема прогнозов
-      self.matches = data[3:len(data)]                              #пары команд
+      data = ''.join(file.readlines()).split('\n')
+    data.pop()
+    self.data = data
+    self.num = data[0]                                            #номер тура
+    self.date = data[1]                           #дата и время окончания приема прогнозов
+    self.matches = data[shift:len(data)]                              #пары команд
 
 class Readfile_users:
 
   def __init__(self, email):
     with open('_users.txt', 'r', encoding='utf-8') as file:          #считывание из файла информации о пользователях
-      data = ' '.join(file.readlines()).split()
+      data = ''.join(file.readlines()).split('\n')
+    data.pop()
     for user in data:
       if email in user:
         user_split = user.split(';')
@@ -20,5 +24,11 @@ class Readfile_users:
           self.passw = user_split[2]                                           #пароль
           self.login = email[:email.find("@")]                            #логин
 
-user_inf = Readfile_users('scared@mail.ru')
-username = user_inf.name
+class Readfile_userscore:
+
+  def __init__(self, filename):
+    with open(filename, 'r', encoding='utf-8') as file:
+      data = ''.join(file.readlines()).split('\n')
+    data.pop()
+    self.data = data
+

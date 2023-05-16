@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, request
 from FillForm import FillF
 from AuthForm import AuthF
-from Readfile import Readfile_tour, Readfile_users
+from Readfile import Readfile_tour, Readfile_users, Readfile_userscore
 
 import datetime 
 
@@ -29,6 +29,26 @@ def base():
     email = request.args.get('email') 
     message = request.args.get('message') 
     return render_template('base.html', email = email, message = message)
+
+@app.route('/read')                                                 #основное меню
+def read():
+    email = request.args.get('email') 
+    #message = request.args.get('message') 
+    tour_inf = Readfile_tour()
+    match_data = tour_inf.data 
+    round_num = tour_inf.num                                                #номер тура
+    user_inf = Readfile_users(email)
+    username = user_inf.name                                                #имя пользователя
+    filename = round_num.replace('тур', '')+'_'+user_inf.login+'.txt'    #имя файла для записи прогноза пользователя
+    shift = 2                                                       #номер строки начала основных данных
+    forecast = Readfile_userscore(filename)
+    userscore_data = forecast.data                                  #считываем прогнозы конкретного пользователя
+
+    data = []
+    for i in range (len(match_data)-shift):
+        data.append((match_data[i+shift], userscore_data[i+shift]))
+
+    return render_template('read.html', username = username, email = email, round_num = round_num, data = data)
     
 
 @app.route('/fill', methods=['GET', 'POST'])                        #процедура заполнение формы
@@ -49,7 +69,7 @@ def fill():
                 file.write(f'{username}\n')
                 file.write(f'{form.h_fields0.data}:{form.g_fields0.data}\n')
             return (redirect(url_for('base', email = email, message = 'Данные отправлены')))
-        return render_template('fill.html', form=FillF(), filename = filename, username = username, round_num = round_num)  #эта строка должна создавать форму
+        return render_template('fill.html', form=FillF(), username = username, round_num = round_num)  #эта строка должна создавать форму
     else:
         return (redirect(url_for('base', email = email, message = 'Прием прогнозов завершен')))
 

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<body>
+<p> {{ round_num }} </p>
+<p> {{ username }} </p>
+
+{% if data %}
+<table>
+  <tr><th>Матч</th><th>Счет</th></tr>
+  {% for row in data %}
+    <tr><td>{{ row[0]  }}</td><td>{{ row[1]  }}</td></tr>
+  {% endfor %}
+</table>
+{% endif %}
+
+<h3><a href="{{ url_for('base', email = email, message='') }}">Назад</a></h3>
+
+{% endblock %}
+
+</body>
+</html>

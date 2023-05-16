@@ -14,7 +14,7 @@
     <p> {{ message }} </p>
 
     <h3><a href="{{ url_for('fill', email = email) }}">Заполнить</a></h3>
-    <h3><a href="/read">Просмотреть</a></h3>
+    <h3><a href="{{ url_for('read', email = email) }}">Просмотреть</a></h3>
 
 {% endblock %}
 </body>
