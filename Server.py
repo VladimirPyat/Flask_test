@@ -3,7 +3,7 @@ from FillForm import FillF
 from AuthForm import AuthF
 from Readfile import Readfile_tour, Readfile_users, Readfile_userscore
 
-import datetime 
+import datetime, os
 
 
 def Date_compare (date_str):                               # True если текущее время не позднее того что задано на входе строкой по формату
@@ -28,25 +28,30 @@ def main():
 def base():
     email = request.args.get('email') 
     message = request.args.get('message') 
-    return render_template('base.html', email = email, message = message)
+    tour_inf = Readfile_tour()
+    round_num = tour_inf.num
+    round_date = tour_inf.date 
+    if Date_compare (round_date):
+        return render_template('base.html', email = email, message = message)
+    else:
+        return (redirect(url_for('table', message = 'Прием прогнозов завершен')))    
+    
 
 @app.route('/read')                                                 #основное меню
 def read():
     email = request.args.get('email') 
-    #message = request.args.get('message') 
+    
     tour_inf = Readfile_tour()
-    match_data = tour_inf.data 
+    match_data = tour_inf.matches 
     round_num = tour_inf.num                                                #номер тура
     user_inf = Readfile_users(email)
     username = user_inf.name                                                #имя пользователя
     filename = round_num.replace('тур', '')+'_'+user_inf.login+'.txt'    #имя файла для записи прогноза пользователя
-    shift = 2                                                       #номер строки начала основных данных
+    #shift = 2                                                       #номер строки начала основных данных
     forecast = Readfile_userscore(filename)
-    userscore_data = forecast.data                                  #считываем прогнозы конкретного пользователя
+    userscore_data = forecast.score                                  #считываем прогнозы конкретного пользователя
 
-    data = []
-    for i in range (len(match_data)-shift):
-        data.append((match_data[i+shift], userscore_data[i+shift]))
+    data = list(zip(match_data, userscore_data))
 
     return render_template('read.html', username = username, email = email, round_num = round_num, data = data)
     
@@ -67,11 +72,45 @@ def fill():
             with open(filename, 'w', encoding='utf-8') as file:
                 file.write(f'{round_num}\n')
                 file.write(f'{username}\n')
-                file.write(f'{form.h_fields0.data}:{form.g_fields0.data}\n')
+                file.write(f'{form.h_fields0.data}-{form.g_fields0.data}\n')
+                file.write(f'{form.h_fields1.data}-{form.g_fields1.data}\n')
+                file.write(f'{form.h_fields2.data}-{form.g_fields2.data}\n')
+                file.write(f'{form.h_fields3.data}-{form.g_fields3.data}\n')
+                file.write(f'{form.h_fields4.data}-{form.g_fields4.data}\n')
+                file.write(f'{form.h_fields5.data}-{form.g_fields5.data}\n')
+                file.write(f'{form.h_fields6.data}-{form.g_fields6.data}\n')
+                file.write(f'{form.h_fields7.data}-{form.g_fields7.data}\n')
             return (redirect(url_for('base', email = email, message = 'Данные отправлены')))
-        return render_template('fill.html', form=FillF(), username = username, round_num = round_num)  #эта строка должна создавать форму
+        return render_template('fill.html', form=FillF(), username = username, round_num = round_num)  #cоздание формы
     else:
-        return (redirect(url_for('base', email = email, message = 'Прием прогнозов завершен')))
+        return (redirect(url_for('table', message = 'Прием прогнозов завершен'))) 
+
+
+@app.route('/table')                                                 #основное меню
+def table ():
+  message = request.args.get('message')
+  tour_inf = Readfile_tour()
+  round_num = tour_inf.num 
+  match_data = tour_inf.matches
+  with open('_users.txt', 'r', encoding='utf-8') as file:          #считывание из файла информации о пользователях
+    data = ''.join(file.readlines()).split('\n')
+  data.pop()
+  mail_list = [user.split(';')[1] for user in data]               #список email для перебора пользователей
+  user_list = [user.split(';')[0] for user in data]               #список имен для сводной
+  score_list = []                                                 #список прогнозов для сводной
+
+  for email, username in zip (mail_list, user_list):
+    filename = round_num.replace('тур', '')+'_'+email[:email.find('@')]+'.txt'
+    
+    if os.path.isfile(filename):                                  
+      userscore_data = Readfile_userscore(filename)               #если файл создан - значит прогноз сделан, считываем
+      userscore_data.score.insert(0, username)
+      score_list.append(userscore_data.score)
+    else:
+      match_score = ['.' for i in tour_inf.matches]               # файла нет - заполняем точками, нет прогноза
+      match_score.insert(0, username)
+      score_list.append(match_score)
+  return render_template('table.html', round_num = round_num, score_list = score_list, match_data = match_data)
 
 
 @app.route('/log', methods=['GET', 'POST'])                                                      #процедура логин

@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<body>
+<p> {{ message }} </p>
+<p> {{ round_num }} </p>
+
+
+{% if score_list %}
+
+<table>
+  <tr><th>Участник/Матч</th>
+  {% for tabl_h in match_data %} 
+    <th>{{ tabl_h }}</th>
+  {% endfor %}  
+  </tr>
+  {% for col in score_list %}
+    <tr>
+    {% for row in col %}
+      <td>{{ row  }}</td>
+    {% endfor %}
+    </tr>
+  {% endfor %}
+</table>
+
+{% endif %}
+
+
+
+{% endblock %}
+
+</body>
+</html>
