@@ -69,7 +69,7 @@ def fill():
 
     if Date_compare (round_date):
         if form.validate_on_submit():                                            #запись в файл информации из формы 
-            with open(filename, 'w', encoding='utf-8') as file:
+            with open(os.path.join(path, filename), 'w', encoding='utf-8') as file:
                 file.write(f'{round_num}\n')
                 file.write(f'{username}\n')
                 file.write(f'{form.h_fields0.data}-{form.g_fields0.data}\n')
@@ -117,7 +117,7 @@ def table ():
 def log():
     form = AuthF()
     if form.validate_on_submit():
-        with open('_users.txt', 'r', encoding='utf-8') as file:
+        with open(os.path.join(path, '_users.txt'), 'r', encoding='utf-8') as file:
             data = ' '.join(file.readlines())
         
         if form.email.data not in data:                                                                 #проверка логин
@@ -135,4 +135,4 @@ def log():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0')

@@ -1,8 +1,14 @@
+import os
+
+path = os.path.dirname(os.path.abspath(__file__))
+
 class Readfile_tour:
+
+
 
   def __init__(self):
     shift = 2                                                       #номер строки начала основных данных
-    with open('_tour.txt', 'r', encoding='utf-8') as file:          #считывание из файла информации о текущем туре
+    with open(os.path.join(path, '_tour.txt'), 'r', encoding='utf-8') as file:          #считывание из файла информации о текущем туре
       data = ''.join(file.readlines()).split('\n')
     data.pop()
     self.data = data
@@ -13,7 +19,7 @@ class Readfile_tour:
 class Readfile_users:
 
   def __init__(self, email):
-    with open('_users.txt', 'r', encoding='utf-8') as file:          #считывание из файла информации о пользователях
+    with open(os.path.join(path, '_users.txt'), 'r', encoding='utf-8') as file:          #считывание из файла информации о пользователях
       data = ''.join(file.readlines()).split('\n')
     data.pop()
     #self.data = data
@@ -29,7 +35,7 @@ class Readfile_userscore:
 
   def __init__(self, filename):
     shift = 2 
-    with open(filename, 'r', encoding='utf-8') as file:
+    with open(os.path.join(path, filename), 'r', encoding='utf-8') as file:
       data = ''.join(file.readlines()).split('\n')
     data.pop()
     self.data = data
