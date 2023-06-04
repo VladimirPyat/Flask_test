@@ -5,6 +5,7 @@ from Readfile import Readfile_tour, Readfile_users, Readfile_userscore
 
 import datetime, os
 
+path = os.path.dirname(os.path.abspath(__file__))
 
 def Date_compare (date_str):                               # True если текущее время не позднее того что задано на входе строкой по формату
   
@@ -47,13 +48,15 @@ def read():
     user_inf = Readfile_users(email)
     username = user_inf.name                                                #имя пользователя
     filename = round_num.replace('тур', '')+'_'+user_inf.login+'.txt'    #имя файла для записи прогноза пользователя
-    #shift = 2                                                       #номер строки начала основных данных
-    forecast = Readfile_userscore(filename)
-    userscore_data = forecast.score                                  #считываем прогнозы конкретного пользователя
 
-    data = list(zip(match_data, userscore_data))
-
-    return render_template('read.html', username = username, email = email, round_num = round_num, data = data)
+    if os.path.isfile(os.path.join(path, filename)):  
+        forecast = Readfile_userscore(filename)
+        userscore_data = forecast.score                                  #считываем прогнозы конкретного пользователя
+        data = list(zip(match_data, userscore_data))
+        return render_template('read.html', username = username, email = email, round_num = round_num, data = data)
+    else:
+        return (redirect(url_for('base', email = email, message = 'Данные не заполнены'))) 
+        
     
 
 @app.route('/fill', methods=['GET', 'POST'])                        #процедура заполнение формы
@@ -92,7 +95,7 @@ def table ():
   tour_inf = Readfile_tour()
   round_num = tour_inf.num 
   match_data = tour_inf.matches
-  with open('_users.txt', 'r', encoding='utf-8') as file:          #считывание из файла информации о пользователях
+  with open(os.path.join(path, '_users.txt'), 'r', encoding='utf-8') as file:          #считывание из файла информации о пользователях
     data = ''.join(file.readlines()).split('\n')
   data.pop()
   mail_list = [user.split(';')[1] for user in data]               #список email для перебора пользователей
@@ -102,13 +105,13 @@ def table ():
   for email, username in zip (mail_list, user_list):
     filename = round_num.replace('тур', '')+'_'+email[:email.find('@')]+'.txt'
     
-    if os.path.isfile(filename):                                  
+    if os.path.isfile(os.path.join(path, filename)):                                  
       userscore_data = Readfile_userscore(filename)               #если файл создан - значит прогноз сделан, считываем
-      userscore_data.score.insert(0, username)
+      userscore_data.score.insert(0, username)                    #добавляем имя пользователя в первый столбец
       score_list.append(userscore_data.score)
     else:
       match_score = ['.' for i in tour_inf.matches]               # файла нет - заполняем точками, нет прогноза
-      match_score.insert(0, username)
+      match_score.insert(0, username)                             #добавляем имя пользователя в первый столбец
       score_list.append(match_score)
   return render_template('table.html', round_num = round_num, score_list = score_list, match_data = match_data)
 
