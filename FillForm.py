@@ -4,39 +4,23 @@ from wtforms.validators import DataRequired, InputRequired
 from Readfile import Readfile_tour
 
 class FillF(FlaskForm):
-    max_score = 10
+
+
+    def __init__(self, *args, **kwargs):
+        super(FillF, self).__init__(*args, **kwargs)
+        self.max_score = 10
+        self.tour_inf = Readfile_tour()
+        self.round_date = self.tour_inf.date 
+        self.round_num = self.tour_inf.num
+        self.data_split = self.tour_inf.matches
+        self.data_split.pop()
+        self.h_names = [i.split('-')[0] for i in self.data_split]
+        self.g_names = [i.split('-')[1] for i in self.data_split]
+
+        for h_name in self.h_names:
+            setattr(self, h_name, IntegerField(h_name, validators=[InputRequired(), validators.NumberRange(min=0, max=self.max_score)]))
+        for g_name in self.g_names:
+            setattr(self, g_name, IntegerField(g_name, validators=[InputRequired(), validators.NumberRange(min=0, max=self.max_score)]))
     
-    tour_inf = Readfile_tour()
-    round_num = tour_inf.num
-    data_split = tour_inf.matches
-    data_split.pop()
-    h_name = [i.split('-')[0] for i in data_split]
-    g_name = [i.split('-')[1] for i in data_split]
-
-    
-    h_fields0 = IntegerField(h_name[0], validators=[InputRequired(), validators.NumberRange(min=0, max=max_score)])
-    g_fields0 = IntegerField(g_name[0], validators=[InputRequired(), validators.NumberRange(min=0, max=max_score)])
-
-    h_fields1 = IntegerField(h_name[1], validators=[InputRequired(), validators.NumberRange(min=0, max=max_score)])
-    g_fields1 = IntegerField(g_name[1], validators=[InputRequired(), validators.NumberRange(min=0, max=max_score)])
-
-    h_fields2 = IntegerField(h_name[2], validators=[InputRequired(), validators.NumberRange(min=0, max=max_score)])
-    g_fields2 = IntegerField(g_name[2], validators=[InputRequired(), validators.NumberRange(min=0, max=max_score)])
-
-    h_fields3 = IntegerField(h_name[3], validators=[InputRequired(), validators.NumberRange(min=0, max=max_score)])
-    g_fields3 = IntegerField(g_name[3], validators=[InputRequired(), validators.NumberRange(min=0, max=max_score)])
-
-    h_fields4 = IntegerField(h_name[4], validators=[InputRequired(), validators.NumberRange(min=0, max=max_score)])
-    g_fields4 = IntegerField(g_name[4], validators=[InputRequired(), validators.NumberRange(min=0, max=max_score)])
-
-    h_fields5 = IntegerField(h_name[5], validators=[InputRequired(), validators.NumberRange(min=0, max=max_score)])
-    g_fields5 = IntegerField(g_name[5], validators=[InputRequired(), validators.NumberRange(min=0, max=max_score)])
-
-    h_fields6 = IntegerField(h_name[6], validators=[InputRequired(), validators.NumberRange(min=0, max=max_score)])
-    g_fields6 = IntegerField(g_name[6], validators=[InputRequired(), validators.NumberRange(min=0, max=max_score)])
-
-    h_fields7 = IntegerField(h_name[7], validators=[InputRequired(), validators.NumberRange(min=0, max=max_score)])
-    g_fields7 = IntegerField(g_name[7], validators=[InputRequired(), validators.NumberRange(min=0, max=max_score)])
-  
-    submit = SubmitField("Отправить")
+        self.submit = SubmitField("Отправить")
     
