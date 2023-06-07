@@ -2,26 +2,38 @@ import os
 
 path = os.path.dirname(os.path.abspath(__file__))
 
+
+def writefile (filename, data):
+  with open(os.path.join(filename), 'w', encoding='utf-8') as file:
+    file.write(data)
+
+def readfile (filename, flag=True):                                 #flag - тип возвращаемых данных с разбивкой или без
+  with open(os.path.join(path, filename), 'r', encoding='utf-8') as file:  # считывание из файла
+    if flag:
+      data = ''.join(file.readlines()).split('\n')
+      data.pop()
+    else:
+      data = ' '.join(file.readlines())
+  return data
+
+
 class Readfile_tour:
 
 
-
   def __init__(self):
-    shift = 2                                                       #номер строки начала основных данных
-    with open(os.path.join(path, '_tour.txt'), 'r', encoding='utf-8') as file:          #считывание из файла информации о текущем туре
-      data = ''.join(file.readlines()).split('\n')
-    data.pop()
+    shift = 2                                                                   #номер строки начала основных данных
+    data = readfile ('_tour.txt')                          #считывание из файла информации о текущем туре
+
     self.data = data
     self.num = data[0]                                            #номер тура
-    self.date = data[1]                           #дата и время окончания приема прогнозов
+    self.date = data[1]                                           #дата и время окончания приема прогнозов
     self.matches = data[shift:len(data)]                              #пары команд
 
 class Readfile_users:
 
   def __init__(self, email):
-    with open(os.path.join(path, '_users.txt'), 'r', encoding='utf-8') as file:          #считывание из файла информации о пользователях
-      data = ''.join(file.readlines()).split('\n')
-    data.pop()
+    data = readfile ('_users.txt')                             #считывание из файла информации о пользователях
+
     #self.data = data
     for user in data:
       if email in user:
@@ -31,13 +43,14 @@ class Readfile_users:
           self.passw = user_split[2]                                           #пароль
           self.login = email[:email.find("@")]                            #логин
 
+
+
 class Readfile_userscore:
 
   def __init__(self, filename):
     shift = 2 
-    with open(os.path.join(path, filename), 'r', encoding='utf-8') as file:
-      data = ''.join(file.readlines()).split('\n')
-    data.pop()
+    data = readfile (filename)
+
     self.data = data
     self.score = data[shift:]
     
