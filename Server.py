@@ -1,13 +1,13 @@
 from flask import Flask, render_template, redirect, url_for, request
 from FillForm import FillF
 from AuthForm import AuthF
-from Readfile import Readfile_tour, Readfile_users, Readfile_userscore
+from Readfile import readfile, writefile, Readfile_tour, Readfile_users, Readfile_userscore
 
 import datetime, os
 
 path = os.path.dirname(os.path.abspath(__file__))
 
-def Date_compare (date_str):                               # True если текущее время не позднее того что задано на входе строкой по формату
+def date_compare (date_str):                               # True если текущее время не позднее того что задано на входе строкой по формату
   
   format = '%Y.%m.%d %H:%M'
   deadline_time = datetime.datetime.strptime(date_str, format)
@@ -32,7 +32,7 @@ def base():
     tour_inf = Readfile_tour()
     round_num = tour_inf.num
     round_date = tour_inf.date 
-    if Date_compare (round_date):
+    if date_compare (round_date):
         return render_template('base.html', email = email, message = message)
     else:
         return (redirect(url_for('table', message = 'Прием прогнозов завершен')))    
@@ -70,21 +70,21 @@ def fill():
     username = user_inf.name                                                #имя пользователя
     filename = round_num.replace('тур', '')+'_'+user_inf.login+'.txt'    #имя файла для записи прогноза пользователя
 
-    if Date_compare (round_date):
+    if date_compare (round_date):
         if form.validate_on_submit():                                            #запись в файл информации из формы 
-            with open(os.path.join(path, filename), 'w', encoding='utf-8') as file:
-                file.write(f'{round_num}\n')
-                file.write(f'{username}\n')
-                file.write(f'{form.h_fields0.data}-{form.g_fields0.data}\n')
-                file.write(f'{form.h_fields1.data}-{form.g_fields1.data}\n')
-                file.write(f'{form.h_fields2.data}-{form.g_fields2.data}\n')
-                file.write(f'{form.h_fields3.data}-{form.g_fields3.data}\n')
-                file.write(f'{form.h_fields4.data}-{form.g_fields4.data}\n')
-                file.write(f'{form.h_fields5.data}-{form.g_fields5.data}\n')
-                file.write(f'{form.h_fields6.data}-{form.g_fields6.data}\n')
-                file.write(f'{form.h_fields7.data}-{form.g_fields7.data}\n')
+            file_strings = [f'{round_num}\n', f'{username}\n',
+                            f'{form.h_fields0.data}-{form.g_fields0.data}\n',
+                            f'{form.h_fields1.data}-{form.g_fields1.data}\n',
+                            f'{form.h_fields2.data}-{form.g_fields2.data}\n',
+                            f'{form.h_fields3.data}-{form.g_fields3.data}\n',
+                            f'{form.h_fields4.data}-{form.g_fields4.data}\n',
+                            f'{form.h_fields5.data}-{form.g_fields5.data}\n',
+                            f'{form.h_fields6.data}-{form.g_fields6.data}\n',
+                            f'{form.h_fields7.data}-{form.g_fields7.data}\n']
+            writefile(os.path.join(path, filename), "".join(file_strings))
+
             return (redirect(url_for('base', email = email, message = 'Данные отправлены')))
-        return render_template('fill.html', form=FillF(), username = username, round_num = round_num)  #cоздание формы
+        return render_template('fill.html', form=FillF(), round_date=round_date, username = username, round_num = round_num)  #cоздание формы
     else:
         return (redirect(url_for('table', message = 'Прием прогнозов завершен'))) 
 
@@ -93,26 +93,49 @@ def fill():
 def table ():
   message = request.args.get('message')
   tour_inf = Readfile_tour()
-  round_num = tour_inf.num 
+  round_num = tour_inf.num
   match_data = tour_inf.matches
-  with open(os.path.join(path, '_users.txt'), 'r', encoding='utf-8') as file:          #считывание из файла информации о пользователях
-    data = ''.join(file.readlines()).split('\n')
-  data.pop()
-  mail_list = [user.split(';')[1] for user in data]               #список email для перебора пользователей
-  user_list = [user.split(';')[0] for user in data]               #список имен для сводной
-  score_list = []                                                 #список прогнозов для сводной
+  data = readfile('_users.txt')  # считывание из файла информации о пользователях
+  match_data.pop()
 
-  for email, username in zip (mail_list, user_list):
-    filename = round_num.replace('тур', '')+'_'+email[:email.find('@')]+'.txt'
-    
-    if os.path.isfile(os.path.join(path, filename)):                                  
-      userscore_data = Readfile_userscore(filename)               #если файл создан - значит прогноз сделан, считываем
-      userscore_data.score.insert(0, username)                    #добавляем имя пользователя в первый столбец
-      score_list.append(userscore_data.score)
-    else:
-      match_score = ['.' for i in tour_inf.matches]               # файла нет - заполняем точками, нет прогноза
-      match_score.insert(0, username)                             #добавляем имя пользователя в первый столбец
-      score_list.append(match_score)
+  mail_list = [user.split(';')[1] for user in data]  # список email для перебора пользователей
+  user_list = [user.split(';')[0] for user in data]  # список имен для сводной
+  score_list = []  # список прогнозов для сводной
+
+  for email, username in zip(mail_list, user_list):
+      filename = round_num.replace('тур', '') + '_' + email[:email.find('@')] + '.txt'
+
+      if os.path.isfile(os.path.join(path, filename)):
+          userscore_data = Readfile_userscore(filename)  # если файл создан - значит прогноз сделан, считываем
+          userscore_data.score.insert(0, username)  # добавляем имя пользователя в первый столбец
+          score_list.append(userscore_data.score)
+      else:
+          match_score = [' - ' for i in match_data]  # файла нет - заполняем пробелами, нет прогноза
+          match_score.insert(0, username)  # добавляем имя пользователя в первый столбец
+          score_list.append(match_score)
+
+  filename = round_num.replace('тур', '') + '_' + 'forecast' + '.txt'
+  if not os.path.isfile(os.path.join(path, filename)):                      #создаем файл для переноса в эксель если не создан
+      teams_list = [i for i in match_data]                                  #список команд для сводного файла
+      teams_list.insert(0, ' ')
+
+      file_strings = []                                                     # список для записи в файл
+      user_list.insert(0, ' ')
+      file_strings.append(';'.join(user_list))                              #добавляем шапку таблицы с именами
+      file_strings.append('\n')
+      for i in range(1, len(teams_list)):
+          onestring = []                                                    #строка для записи результатов домашних команд
+          twostring = []                                                    #строка для записи результатов гостевых команд
+          onestring.append(teams_list[i].split('-')[0])                     #разделение гостевой и домашней команды
+          twostring.append(teams_list[i].split('-')[1])
+          for users_scores in score_list:
+              onestring.append(users_scores[i].split('-')[0])               #разделение результатов гостевой и домашней команды
+              twostring.append(users_scores[i].split('-')[1])
+          file_strings.append(';'.join(onestring) + '\n')
+          file_strings.append(';'.join(twostring) + '\n')
+
+      writefile(os.path.join(path, filename), "".join(file_strings))
+
   return render_template('table.html', round_num = round_num, score_list = score_list, match_data = match_data)
 
 
@@ -120,9 +143,8 @@ def table ():
 def log():
     form = AuthF()
     if form.validate_on_submit():
-        with open(os.path.join(path, '_users.txt'), 'r', encoding='utf-8') as file:
-            data = ' '.join(file.readlines())
-        
+        data = readfile ('_users.txt', False)
+
         if form.email.data not in data:                                                                 #проверка логин
             return render_template('login.html', form=form, message='Вы не зарегистрированы')
         else:
