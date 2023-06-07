@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, request
 from FillForm import FillF
 from AuthForm import AuthF
-from Readfile import readfile, writefile, Readfile_tour, Readfile_users, Readfile_userscore
+from RWfile import readfile, writefile, Readfile_tour, Readfile_users, Readfile_userscore
 
 import datetime, os
 
