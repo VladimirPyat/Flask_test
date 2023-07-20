@@ -9,16 +9,16 @@
 
 {% if score_list %}
 
-<table>
-  <tr><th>Участник/Матч</th>
+<table border="1">
+  <tr><th width="20%">Участник/Матч</th>
   {% for tabl_h in match_data %} 
-    <th>{{ tabl_h }}</th>
+    <th width="10%">{{ tabl_h }}</th>
   {% endfor %}  
   </tr>
   {% for col in score_list %}
     <tr>
     {% for row in col %}
-      <td>{{ row  }}</td>
+      <td align="center">{{ row  }}</td>
     {% endfor %}
     </tr>
   {% endfor %}

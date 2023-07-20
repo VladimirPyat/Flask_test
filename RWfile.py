@@ -31,17 +31,17 @@ class Readfile_tour:
 
 class Readfile_users:
 
-  def __init__(self, email):
+  def __init__(self, login):
     data = readfile ('_users.txt')                             #считывание из файла информации о пользователях
 
     #self.data = data
     for user in data:
-      if email in user:
+      if login in user:
         user_split = user.split(';')
-        if user_split[1] == email:                                  #проверка пароля
+        if user_split[1] == login:                                              #проверка пароля
           self.name = user_split[0]                                            #имя пользователя
           self.passw = user_split[2]                                           #пароль
-          self.login = email[:email.find("@")]                            #логин
+
 
 
 
