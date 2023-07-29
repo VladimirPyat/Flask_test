@@ -6,9 +6,34 @@
     <title>Главная страница</title>
 </head>
 
-<style>
-    
-</style>
+    <style>
+       {% block styles %}
+       th {
+        font-size: 95%;
+        }
+
+        /* Разрешение экрана до 320px */
+        @media (max-width: 320px) {
+            body {
+                font-size: 280%;
+            }
+        }
+
+        /* Разрешение экрана от 321px до 1920px */
+        @media (min-width: 321px) and (max-width: 1920px) {
+            body {
+                font-size: 100%;
+            }
+        }
+
+        /* Разрешение экрана больше или равно 1921px */
+        @media (min-width: 1921px) {
+            body {
+                font-size: 120%;
+            }
+        }
+        {% endblock %}
+    </style>
 
 <body>
     <p> {{ message }} </p>

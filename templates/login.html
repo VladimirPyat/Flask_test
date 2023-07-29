@@ -1,24 +1,45 @@
 {% extends 'base.html' %}
 
-
 {% block content %}
+  {% if form %}
+    <form action="" method="post">
+      {{ form.csrf_token }}
 
-{% if form %}
-<form action="" method="post">
-    {{ form.csrf_token }}
+      <input type="hidden" name="font_size" id="font_size" value="">
 
-    {{ form.login.label }}
-    {{ form.login() }}
-    <br>
-    {{ form.password.label }} 
-    {{ form.password() }}
-    <br>
-    {{ form.submit() }}
-{% endif %}
+      <script>
+        var font_size = 14;  // значение по умолчанию
 
+        var userAgent = navigator.userAgent.toLowerCase();
+        var isAndroid = userAgent.indexOf("android") > -1;
+        var isiOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
 
-{{ message }}
+        if (isAndroid || isiOS) {
+          font_size = 28;
+        }
 
-</form>
+        window.addEventListener("DOMContentLoaded", function() {
+          document.getElementById("font_size").value = font_size;
+          var formElements = document.getElementsByClassName("form-input");
+          for (var i = 0; i < formElements.length; i++) {
+            formElements[i].style.fontSize = font_size + "px";
+          }
+          var labelElements = document.getElementsByClassName("label-style");
+          for (var i = 0; i < labelElements.length; i++) {
+            labelElements[i].style.fontSize = font_size + "px";
+          }
+        });
+      </script>
 
+      {{ form.login.label(class_="form-label label-style", style="font-size: " ~ font_size ~ "px;") }}
+      {{ form.login(class_="form-input", style="font-size: " ~ font_size ~ "px;") }}
+      <br>
+      {{ form.password.label(class_="form-label label-style", style="font-size: " ~ font_size ~ "px;") }}
+      {{ form.password(class_="form-input", style="font-size: " ~ font_size ~ "px;") }}
+      <br>
+      {{ form.submit(class_="form-input", style="font-size: " ~ font_size ~ "px;") }}
+    </form>
+  {% endif %}
+
+  {{ message }}
 {% endblock %}

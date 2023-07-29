@@ -10,8 +10,8 @@ def writefile (filename, data):
 def readfile (filename, flag=True):                                 #flag - тип возвращаемых данных с разбивкой или без
   with open(os.path.join(path, filename), 'r', encoding='utf-8') as file:  # считывание из файла
     if flag:
-      data = ''.join(file.readlines()).split('\n')
-      data.pop()
+      data = [line.strip() for line in file.readlines() if line.strip()]  # убираем пустые строки
+
     else:
       data = ' '.join(file.readlines())
   return data

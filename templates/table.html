@@ -2,6 +2,7 @@
 
 {% block content %}
 
+
 <body>
 <p> {{ message }} </p>
 <p> {{ round_num }} </p>
@@ -10,10 +11,10 @@
 {% if score_list %}
 
 <table border="1">
-  <tr><th width="20%">Участник/Матч</th>
-  {% for tabl_h in match_data %} 
+  <tr><th width="20%" >Участник/Матч</th>
+  {% for tabl_h in match_data %}
     <th width="10%">{{ tabl_h }}</th>
-  {% endfor %}  
+  {% endfor %}
   </tr>
   {% for col in score_list %}
     <tr>
@@ -25,8 +26,6 @@
 </table>
 
 {% endif %}
-
-
 
 {% endblock %}
 
