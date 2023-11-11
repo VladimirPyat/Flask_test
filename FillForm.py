@@ -10,7 +10,7 @@ class FillF(FlaskForm):
     tour_inf = Readfile_tour()
     round_num = tour_inf.num
     data_split = tour_inf.matches
-    #data_split.pop()
+
     h_name = [i.split('-')[0] for i in data_split]
     g_name = [i.split('-')[1] for i in data_split]
 
