@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<style>
+    .tableHeader {
+        width: 25ch;
+        text-align: justify;
+    }
+</style>
+
+<p style="color: red;"> Вы вошли под учетной записью {{login}}</p>
+
+<form method="POST" action="">
+  {{ form.csrf_token }}
+
+  <h3> Ввод данных для тура № {{ form.tour_num }} </h3>
+
+<table>
+    <tr>
+        <th class="tableHeader">Дата матча</th>
+        <th class="tableHeader">Домашняя команда</th>
+        <th class="tableHeader">Гостевая команда</th>
+        <th class="tableHeader">Время начала</th>
+    </tr>
+</table>
+
+<div >
+
+  {% for field in form %}
+      {% if 'Start Date' in field.label.text or 'Home Name' in field.label.text or 'Guest Name' in field.label.text or 'Start Time' in field.label.text %}
+          {{ field }}
+<!--    вывод по 4 поля на строке. используем функцию подсчета полей из формы чтоб передать ее в цикл-->
+          {% set count = form.get_count() %}
+          {% if count % 4 == 0 %}
+            <br>
+          {% endif %}
+      {% endif %}
+  {% endfor %}
+</div>
+
+    <h4> Окончание приема прогнозов {{ form.deadline_date }} до {{ form.deadline_time }} </h4>
+    <p>Время окончания прогнозов если поле не заполнено - 09:00. Время начала матчей вводить не обязательно</p>
+
+  <p>
+  {{ form.submit ()}}
+  </p>
+  </form>
+
+
+{% endblock %}
+
+

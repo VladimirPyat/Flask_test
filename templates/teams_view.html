@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+
+<div >
+
+    {% for string in form_data %}
+        <p>
+            {{ string }}
+        </p>
+
+    {% endfor %}
+</div>
+
+<p style="color: red;"> {{ message }} </p>
+
+
+
+    <p>
+        <a href="/admin/fill_complete"> <button>Принять</button> </a>
+        <a href="/admin/teams_fill?login={{ login }}"> <button>Отменить</button> </a>
+    </p>
+
+
+
+{% endblock %}
+
+

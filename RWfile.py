@@ -42,6 +42,10 @@ class Readfile_users:
                 if user_split[1] == login:  # проверка пароля
                     self.name = user_split[0]  # имя пользователя
                     self.passw = user_split[2]  # пароль
+        else:
+            self.name = None
+            self.passw = None
+
 
 
 class Readfile_userscore:                       # считывание файла конкретного пользователя

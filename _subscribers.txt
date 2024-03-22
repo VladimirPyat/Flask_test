@@ -1,2 +1,12 @@
 87313;pyatnitsky;ON
-208935045;larin;ON
+208935045;larin;OFF
+445434681;kozhevnikov;OFF
+29797213;nikitin;OFF
+910279;ivanova;OFF
+23574187;russkov;OFF
+376897628;volchenko;OFF
+102322807;alexeev;OFF
+165621221;shutov;OFF
+695644;kurakov;OFF
+12351480;kuznetsov;OFF
+175606588;bogov;OFF
